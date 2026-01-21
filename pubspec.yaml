@@ -1,4 +1,4 @@
-name: gtd_manager
+name: gtd_manager_pro
 description: Ứng dụng quản lý công việc GTD Pro với 10 tính năng nâng cao
 version: 2.0.0+1
 
@@ -44,5 +44,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/sounds/
