@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/task_model.dart';
+import '../services/firebase_service.dart';
 import '../services/notification_service.dart';
 
 class TaskProvider with ChangeNotifier {
@@ -144,8 +145,12 @@ class TaskProvider with ChangeNotifier {
     _tasks.removeWhere((t) => t.id == id);
     await _saveTasks();
 
-    if (_cloudSyncEnabled) {
-      await FirebaseFirestore.instance.collection('tasks').doc(id).delete();
+    if (_cloudSyncEnabled && FirebaseService.isAvailable) {
+      try {
+        await FirebaseFirestore.instance.collection('tasks').doc(id).delete();
+      } catch (e) {
+        debugPrint('Cloud delete error: $e');
+      }
     }
 
     notifyListeners();
@@ -165,6 +170,12 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> toggleCloudSync() async {
+    // Chưa có cấu hình Firebase thật (Linear IN4-115) → không thể bật sync.
+    if (!_cloudSyncEnabled && !FirebaseService.isAvailable) {
+      debugPrint('Không thể bật Cloud Sync: Firebase chưa được cấu hình.');
+      return;
+    }
+
     _cloudSyncEnabled = !_cloudSyncEnabled;
     await _prefs.setBool('cloudSyncEnabled', _cloudSyncEnabled);
 
@@ -176,6 +187,7 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> _syncToCloud(Task task) async {
+    if (!FirebaseService.isAvailable) return;
     try {
       await FirebaseFirestore.instance
           .collection('tasks')
@@ -194,6 +206,10 @@ class TaskProvider with ChangeNotifier {
 
   Future<void> _loadCloudSyncPreference() async {
     _cloudSyncEnabled = _prefs.getBool('cloudSyncEnabled') ?? false;
+    // Nếu pref cũ bật sync nhưng Firebase không khả dụng → ép về local.
+    if (_cloudSyncEnabled && !FirebaseService.isAvailable) {
+      _cloudSyncEnabled = false;
+    }
   }
 
   Future<void> _saveTasks() async {

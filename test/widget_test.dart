@@ -1,30 +1,41 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Smoke test: app khởi động được ở chế độ offline-first (không Firebase)
+// và hiển thị thanh điều hướng chính với 5 tab.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:vipinfo/main.dart';
+import 'package:vipinfo/providers/habit_provider.dart';
+import 'package:vipinfo/providers/pomodoro_provider.dart';
+import 'package:vipinfo/providers/task_provider.dart';
+import 'package:vipinfo/providers/theme_provider.dart';
+import 'package:vipinfo/screens/main_navigation.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App khởi động và hiển thị 5 tab điều hướng', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ThemeProvider(prefs)),
+          ChangeNotifierProvider(create: (_) => TaskProvider(prefs)),
+          ChangeNotifierProvider(create: (_) => PomodoroProvider()),
+          ChangeNotifierProvider(create: (_) => HabitProvider(prefs)),
+        ],
+        child: const MyApp(),
+      ),
+    );
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(MainNavigation), findsOneWidget);
+    expect(find.text('Tasks'), findsWidgets);
+    expect(find.text('Dashboard'), findsWidgets);
+    expect(find.text('Pomodoro'), findsWidgets);
+    expect(find.text('Habits'), findsWidgets);
+    expect(find.text('Settings'), findsWidgets);
   });
 }
