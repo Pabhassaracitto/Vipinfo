@@ -1,21 +1,49 @@
-<<<<<<< HEAD
-# vipinfo
+# Vipinfo — GTD Manager Pro
 
-Quản Lý Thông Tin Thông Minh
+Dự án **quản lý thông tin thông minh**: ứng dụng Flutter quản lý công việc theo phương pháp GTD (Getting Things Done) với các tính năng nâng cao.
 
-## Getting Started
+## Tính năng
 
-This project is a starting point for a Flutter application.
+- ✅ **Tasks (GTD)** — quản lý công việc theo 6 danh mục: Inbox, Next, Projects, Waiting, Calendar, Someday; ưu tiên, tags, hạn chót, tìm kiếm & lọc.
+- 📊 **Dashboard** — thống kê, biểu đồ tiến độ (fl_chart).
+- ⏱️ **Pomodoro** — đồng hồ tập trung tích hợp với tasks.
+- 🔁 **Habits** — theo dõi thói quen, chuỗi ngày (streak).
+- 🌙 **Dark mode** — chuyển giao diện sáng/tối.
+- 🔔 **Thông báo cục bộ** — nhắc việc theo giờ (flutter_local_notifications).
+- 📤 **Export/Import JSON** — sao lưu và khôi phục dữ liệu.
+- ☁️ **Cloud Sync (Firebase)** — *tùy chọn*; xem ghi chú bên dưới.
 
-A few resources to get you started if this is your first Flutter project:
+## Chạy dự án
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```bash
+flutter pub get
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-=======
-# Vipinfo
-Dự án quản lý thông tin thông minh.
->>>>>>> 5d8fc321a5f833c999ba299951ed037cd8ee8249
+Chạy test:
+
+```bash
+flutter test
+```
+
+### Ghi chú về Firebase
+
+Repo **chưa kèm** cấu hình Firebase (`lib/firebase_options.dart`, `android/app/google-services.json`). Khi chưa cấu hình, app tự chạy ở chế độ **offline-first** (dữ liệu lưu cục bộ bằng `shared_preferences`) và tính năng Cloud Sync bị vô hiệu hóa — app không crash.
+
+Để bật Cloud Sync: tạo Firebase project, chạy `flutterfire configure`, bật Authentication + Cloud Firestore (chi tiết trong Linear issue IN4-115).
+
+## Cấu trúc thư mục
+
+```
+lib/
+├── main.dart              # Entry point, khởi tạo providers & services
+├── models/                # Task, Habit
+├── providers/             # TaskProvider, HabitProvider, PomodoroProvider, ThemeProvider
+├── screens/               # Home, Dashboard, Pomodoro, Habits, Settings, Navigation
+├── services/              # NotificationService, FirebaseService
+└── widgets/               # AddTaskDialog, CategoryDrawer, TaskItem, TaskList
+```
+
+## Nền tảng hỗ trợ
+
+Hiện tại: **Android**. iOS/web dự kiến bổ sung sau (Linear issue IN4-116).
