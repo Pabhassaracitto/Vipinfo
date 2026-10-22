@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'providers/task_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/pomodoro_provider.dart';
 import 'providers/habit_provider.dart';
+import 'services/firebase_service.dart';
 import 'services/notification_service.dart';
 import 'screens/main_navigation.dart';
 
@@ -16,8 +16,9 @@ final FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotifica
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
+  // Initialize Firebase (offline-first: không crash khi chưa có cấu hình,
+  // xem lib/services/firebase_service.dart và Linear IN4-115)
+  await FirebaseService.init();
 
   // Initialize Timezone
   tz.initializeTimeZones();

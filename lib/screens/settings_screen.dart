@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import '../providers/theme_provider.dart';
 import '../providers/task_provider.dart';
+import '../services/firebase_service.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -36,12 +37,18 @@ class SettingsScreen extends StatelessWidget {
           const _SectionHeader(title: '☁️ Đồng bộ'),
           SwitchListTile(
             title: const Text('Cloud Sync'),
-            subtitle: Text(taskProvider.cloudSyncEnabled
-                ? 'Đang đồng bộ với Firebase'
-                : 'Chỉ lưu cục bộ'),
-            secondary: const Icon(Icons.cloud),
+            subtitle: Text(!FirebaseService.isAvailable
+                ? 'Chưa cấu hình Firebase — chỉ lưu cục bộ'
+                : taskProvider.cloudSyncEnabled
+                    ? 'Đang đồng bộ với Firebase'
+                    : 'Chỉ lưu cục bộ'),
+            secondary: Icon(FirebaseService.isAvailable
+                ? Icons.cloud
+                : Icons.cloud_off),
             value: taskProvider.cloudSyncEnabled,
-            onChanged: (_) => taskProvider.toggleCloudSync(),
+            onChanged: FirebaseService.isAvailable
+                ? (_) => taskProvider.toggleCloudSync()
+                : null,
           ),
           const Divider(),
 
